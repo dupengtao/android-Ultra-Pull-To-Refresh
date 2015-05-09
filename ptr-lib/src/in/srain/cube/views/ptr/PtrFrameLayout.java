@@ -2,8 +2,10 @@ package in.srain.cube.views.ptr;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.*;
+import android.widget.FrameLayout;
 import android.widget.Scroller;
 import android.widget.TextView;
 import in.srain.cube.views.ptr.indicator.PtrIndicator;
@@ -14,7 +16,7 @@ import in.srain.cube.views.ptr.util.PtrCLog;
  * support: pull to refresh / release to refresh / auto refresh / keep header view while refreshing / hide header view while refreshing
  * It defines {@link in.srain.cube.views.ptr.PtrUIHandler}, which allows you customize the UI easily.
  */
-public class PtrFrameLayout extends ViewGroup {
+public class PtrFrameLayout extends FrameLayout {
 
     // status enum
     public final static byte PTR_STATUS_INIT = 1;
@@ -23,7 +25,7 @@ public class PtrFrameLayout extends ViewGroup {
     public final static byte PTR_STATUS_COMPLETE = 4;
 
     private static final boolean DEBUG_LAYOUT = true;
-    public static boolean DEBUG = false;
+    public static boolean DEBUG = true;
     private static int ID = 1;
 
     // auto refresh status
@@ -51,7 +53,7 @@ public class PtrFrameLayout extends ViewGroup {
     private ScrollChecker mScrollChecker;
     // private int mCurrentPos = 0;
     // private int mLastPos = 0;
-    private int mPagingTouchSlop;
+    private int mPagingTouchSlop;// 表示滑动的时候，手的移动要大于这个距离才开始移动控件。如果小于这个距离就不触发移动控件
     private int mHeaderHeight;
 
     private byte mStatus = PTR_STATUS_INIT;
@@ -164,9 +166,10 @@ public class PtrFrameLayout extends ViewGroup {
             mContent = errorView;
             addView(mContent);
         }
-        if (mHeaderView != null) {
-            mHeaderView.bringToFront();
-        }
+        //if (mHeaderView != null) {
+        //    mHeaderView.bringToFront();
+        //    mContent.bringToFront();
+        //}
         super.onFinishInflate();
     }
 
@@ -227,10 +230,11 @@ public class PtrFrameLayout extends ViewGroup {
         if (mHeaderView != null) {
             MarginLayoutParams lp = (MarginLayoutParams) mHeaderView.getLayoutParams();
             final int left = paddingLeft + lp.leftMargin;
-            final int top = paddingTop + lp.topMargin + offsetX - mHeaderHeight;
+            //final int top = paddingTop + lp.topMargin + offsetX - mHeaderHeight;
+            final int top = paddingTop + lp.topMargin + offsetX ;
             final int right = left + mHeaderView.getMeasuredWidth();
             final int bottom = top + mHeaderView.getMeasuredHeight();
-            mHeaderView.layout(left, top, right, bottom);
+            mHeaderView.layout(left, 0, right, mHeaderView.getMeasuredHeight());
             if (DEBUG && DEBUG_LAYOUT) {
                 PtrCLog.d(LOG_TAG, "onLayout header: %s %s %s %s", left, top, right, bottom);
             }
@@ -412,7 +416,7 @@ public class PtrFrameLayout extends ViewGroup {
                     change, mPtrIndicator.getCurrentPosY(), mPtrIndicator.getLastPosY(), mContent.getTop(), mHeaderHeight);
         }
 
-        mHeaderView.offsetTopAndBottom(change);
+        //mHeaderView.offsetTopAndBottom(change);
         if (!isPinContent()) {
             mContent.offsetTopAndBottom(change);
         }
@@ -863,27 +867,28 @@ public class PtrFrameLayout extends ViewGroup {
             header.setLayoutParams(lp);
         }
         mHeaderView = header;
+        header.setBackgroundColor(Color.YELLOW);
         addView(header);
     }
 
     @Override
     protected boolean checkLayoutParams(ViewGroup.LayoutParams p) {
-        return p instanceof LayoutParams;
+        return p instanceof FrameLayout.LayoutParams;
     }
 
     @Override
-    protected ViewGroup.LayoutParams generateDefaultLayoutParams() {
-        return new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+    protected FrameLayout.LayoutParams generateDefaultLayoutParams() {
+        return new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
     }
 
     @Override
-    protected ViewGroup.LayoutParams generateLayoutParams(ViewGroup.LayoutParams p) {
-        return new LayoutParams(p);
+    protected FrameLayout.LayoutParams generateLayoutParams(ViewGroup.LayoutParams p) {
+        return new FrameLayout.LayoutParams(p);
     }
 
     @Override
-    public ViewGroup.LayoutParams generateLayoutParams(AttributeSet attrs) {
-        return new LayoutParams(getContext(), attrs);
+    public FrameLayout.LayoutParams generateLayoutParams(AttributeSet attrs) {
+        return new FrameLayout.LayoutParams(getContext(), attrs);
     }
 
     private void sendCancelEvent() {
