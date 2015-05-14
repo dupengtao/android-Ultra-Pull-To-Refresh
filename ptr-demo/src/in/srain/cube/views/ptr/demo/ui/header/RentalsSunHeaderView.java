@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import in.srain.cube.views.ptr.PtrFrameLayout;
 import in.srain.cube.views.ptr.PtrUIHandler;
@@ -15,6 +16,8 @@ public class RentalsSunHeaderView extends View implements PtrUIHandler {
     private RentalsSunDrawable mDrawable;
     private PtrFrameLayout mPtrFrameLayout;
     private PtrTensionIndicator mPtrTensionIndicator;
+
+    private static final String TAG="PtrUIHandler";
 
     public RentalsSunHeaderView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
@@ -58,6 +61,7 @@ public class RentalsSunHeaderView extends View implements PtrUIHandler {
     @Override
     public void onUIReset(PtrFrameLayout frame) {
         mDrawable.resetOriginals();
+        Log.v(TAG, "onUIReset ==>");
     }
 
     @Override
@@ -68,15 +72,17 @@ public class RentalsSunHeaderView extends View implements PtrUIHandler {
 
     @Override
     public void onUIRefreshPrepare(PtrFrameLayout frame) {
-
+        Log.v(TAG,"onUIRefreshPrepare ==>");
     }
 
     @Override
     public void onUIRefreshBegin(PtrFrameLayout frame) {
         mDrawable.start();
         float percent = mPtrTensionIndicator.getOverDragPercent();
-        mDrawable.offsetTopAndBottom(mPtrTensionIndicator.getCurrentPosY());
+        int currentPosY = mPtrTensionIndicator.getCurrentPosY();
+        mDrawable.offsetTopAndBottom(currentPosY);
         mDrawable.setPercent(percent);
+        Log.v(TAG,"onUIRefreshBegin ==> percent = "+percent+"  getCurrentPosY = " + currentPosY);
         invalidate();
     }
 
@@ -84,16 +90,20 @@ public class RentalsSunHeaderView extends View implements PtrUIHandler {
     public void onUIRefreshComplete(PtrFrameLayout frame) {
         float percent = mPtrTensionIndicator.getOverDragPercent();
         mDrawable.stop();
-        mDrawable.offsetTopAndBottom(mPtrTensionIndicator.getCurrentPosY());
+        int currentPosY = mPtrTensionIndicator.getCurrentPosY();
+        mDrawable.offsetTopAndBottom(currentPosY);
         mDrawable.setPercent(percent);
+        Log.v(TAG, "onUIRefreshComplete ==> percent = " + percent + "  getCurrentPosY = " + currentPosY);
         invalidate();
     }
 
     @Override
     public void onUIPositionChange(PtrFrameLayout frame, boolean isUnderTouch, byte status, PtrIndicator ptrIndicator) {
         float percent = mPtrTensionIndicator.getOverDragPercent();
-        mDrawable.offsetTopAndBottom(mPtrTensionIndicator.getCurrentPosY());
+        int currentPosY = mPtrTensionIndicator.getCurrentPosY();
+        mDrawable.offsetTopAndBottom(currentPosY);
         mDrawable.setPercent(percent);
+        Log.v(TAG, "onUIPositionChange ==> percent = " + percent + "  getCurrentPosY = " + currentPosY);
         invalidate();
     }
 

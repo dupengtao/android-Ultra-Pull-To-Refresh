@@ -2,7 +2,6 @@ package in.srain.cube.views.ptr;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.*;
 import android.widget.FrameLayout;
@@ -867,8 +866,7 @@ public class PtrFrameLayout extends FrameLayout {
             header.setLayoutParams(lp);
         }
         mHeaderView = header;
-        header.setBackgroundColor(Color.YELLOW);
-        addView(header);
+        addView(header,0);
     }
 
     @Override

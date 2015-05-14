@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
@@ -121,6 +122,7 @@ public class PtrClassicDefaultHeader extends FrameLayout implements PtrUIHandler
         resetView();
         mShouldShowLastUpdate = true;
         tryUpdateLastUpdateTime();
+        Log.e("xxx","onUIReset ---");
     }
 
     @Override
@@ -139,6 +141,7 @@ public class PtrClassicDefaultHeader extends FrameLayout implements PtrUIHandler
         } else {
             mTitleTextView.setText(getResources().getString(R.string.cube_ptr_pull_down));
         }
+        Log.e("xxx","onUIRefreshPrepare ---");
     }
 
     @Override
@@ -151,6 +154,7 @@ public class PtrClassicDefaultHeader extends FrameLayout implements PtrUIHandler
 
         tryUpdateLastUpdateTime();
         mLastUpdateTimeUpdater.stop();
+        Log.e("xxx", "onUIRefreshBegin ---");
     }
 
     @Override
@@ -168,6 +172,7 @@ public class PtrClassicDefaultHeader extends FrameLayout implements PtrUIHandler
             mLastUpdateTime = new Date().getTime();
             sharedPreferences.edit().putLong(mLastUpdateTimeKey, mLastUpdateTime).commit();
         }
+        Log.e("xxx", "onUIRefreshComplete ---");
     }
 
     private void tryUpdateLastUpdateTime() {
