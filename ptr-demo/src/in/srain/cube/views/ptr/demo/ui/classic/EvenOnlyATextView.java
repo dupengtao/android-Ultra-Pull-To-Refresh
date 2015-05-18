@@ -47,7 +47,7 @@ public class EvenOnlyATextView extends TitleBaseFragment {
                     public void run() {
                         ptrFrame.refreshComplete();
                     }
-                }, 1500);
+                }, 3000);
             }
 
             @Override

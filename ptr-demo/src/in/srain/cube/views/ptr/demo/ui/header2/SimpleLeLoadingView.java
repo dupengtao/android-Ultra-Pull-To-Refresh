@@ -1,8 +1,6 @@
 package in.srain.cube.views.ptr.demo.ui.header2;
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
+import android.animation.*;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -14,6 +12,7 @@ import android.graphics.drawable.shapes.OvalShape;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 
 import java.util.ArrayList;
@@ -21,19 +20,23 @@ import java.util.ArrayList;
 /**
  * Created by dupengtao on 15-5-12.
  */
-public class SimpleLeLoadingView extends View {
+public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorUpdateListener {
 
-    private static final int ROTATE_DURATION = 1000;
+    private static final int ROTATE_DURATION = 1200;
     private static final int DURATION = 1000;
     private static final int BALL_NUM = 6;
+    private static final int DURATION2 = 100;
+    private static int PERCENT_OFFSET = DURATION / 6 / 2 * 3;
+    //private static int EVERY_DURATION = DURATION / 6 - PERCENT_OFFSET / 6;
     private static int EVERY_DURATION = DURATION / 6;
     private float mBallRadius, mViewSize, mViewRadius;
     private ArrayList<BallsLoadingShapeHolder> mBalls = new ArrayList<>(6);
     private ArrayList<Integer> colorList = new ArrayList<>(6);
-    private AnimatorSet appearAnim;
+    private AnimatorSet appearAnim , disappearAnim;
     private ObjectAnimator[] mAppearAnimators;
     private long mLastPercent;
     private ObjectAnimator rotateAnim;
+    private long mPercentOffset;
 
     public SimpleLeLoadingView(Context context) {
         this(context, null);
@@ -98,15 +101,16 @@ public class SimpleLeLoadingView extends View {
 
 
     private void preAnim() {
-        getAppearAnim();
-        rotateAnim = getRotateAnim();
+        preAppearAnim();
+        rotateAnim = preRotateAnim();
+        preDisappearAnim();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         for (BallsLoadingShapeHolder ball : mBalls) {
-            if(ball.getShape().getAlpha()<=0){
+            if (ball.getShape().getAlpha() <= 0) {
                 continue;
             }
             canvas.translate(ball.getX() - mBallRadius / 2, ball.getY() - mBallRadius / 2);
@@ -130,7 +134,7 @@ public class SimpleLeLoadingView extends View {
         initBall();
     }
 
-    public ObjectAnimator getRotateAnim() {
+    public ObjectAnimator preRotateAnim() {
         PropertyValuesHolder rotation = PropertyValuesHolder.ofFloat("rotation",
                 0, 360);
         ObjectAnimator rotateAnim = ObjectAnimator.ofPropertyValuesHolder(this, rotation).setDuration(ROTATE_DURATION);
@@ -161,7 +165,7 @@ public class SimpleLeLoadingView extends View {
         return z2nAnim;
     }
 
-    private AnimatorSet getAppearAnim() {
+    private AnimatorSet preAppearAnim() {
         mAppearAnimators = new ObjectAnimator[mBalls.size()];
         for (int i = 0, j = mBalls.size(); i < j; i++) {
             //0-normal
@@ -183,8 +187,75 @@ public class SimpleLeLoadingView extends View {
         return appearAnim;
     }
 
-    public void setPercent(long percent) {
 
+    /**
+     * normal - 0
+     */
+    private ObjectAnimator getNormal2Zero(BallsLoadingShapeHolder ball, int orderId) {
+        PropertyValuesHolder pvhW = PropertyValuesHolder.ofFloat("width",
+                ball.getWidth(), 0);
+        PropertyValuesHolder pvhH = PropertyValuesHolder.ofFloat("height",
+                ball.getHeight(), 0);
+        PropertyValuesHolder pvTX = PropertyValuesHolder.ofFloat("x", ball.getX(),
+                mViewSize / 2);
+        PropertyValuesHolder pvTY = PropertyValuesHolder.ofFloat("y", ball.getY(),
+                mViewSize / 2);
+        ObjectAnimator z2nAnim = ObjectAnimator.ofPropertyValuesHolder(
+                ball, pvhW, pvhH, pvTX, pvTY).setDuration(DURATION2*3 );
+        //z2nAnim.setStartDelay(75 * orderId);
+        z2nAnim.setInterpolator(new AccelerateInterpolator());
+        z2nAnim.addUpdateListener(this);
+        return z2nAnim;
+    }
+
+
+
+    public void preDisappearAnim() {
+
+        if (disappearAnim == null) {
+            final ObjectAnimator[] mAnimators = new ObjectAnimator[mBalls.size()];
+            for (int i = 0, j = mBalls.size(); i < j; i++) {
+                //0-normal
+                mAnimators[i] = getNormal2Zero(mBalls.get(i), i);
+                mAnimators[i].setTarget(mBalls.get(i));
+                mAnimators[i].addListener(new EmptyAnimatorListener() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        ObjectAnimator objectAnimator = (ObjectAnimator) animation;
+                        BallsLoadingShapeHolder holder = (BallsLoadingShapeHolder) objectAnimator.getTarget();
+                        if (holder != null) {
+                            holder.setAlpha(0f);
+                        }
+                    }
+                });
+            }
+            disappearAnim = new AnimatorSet();
+            disappearAnim.addListener(new EmptyAnimatorListener() {
+
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    super.onAnimationStart(animation);
+                    rotateAnim.pause();
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    //rotateAnim.cancel();
+                    resetOriginals();
+                }
+            });
+            disappearAnim.playTogether(mAnimators);
+        }
+        //disappearAnim.start();
+    }
+
+
+    public void setPercent(long percent) {
+        //if (percent < PERCENT_OFFSET) {
+        //    return;
+        //}
+        //percent -= PERCENT_OFFSET;
         boolean isDown = getDirection(percent);
         if (percent <= EVERY_DURATION) {
             cancelRotateAnim();
@@ -251,7 +322,7 @@ public class SimpleLeLoadingView extends View {
                 makeCurPlayTime(mAppearAnimators[5], 0);
             }
             invalidate();
-        } else if (percent <= EVERY_DURATION * 6) {
+        } else if (percent < EVERY_DURATION * 6) {
             cancelRotateAnim();
             mAppearAnimators[5].setCurrentPlayTime(percent - EVERY_DURATION * 5);
             mBalls.get(5).setAlpha(1);
@@ -291,6 +362,12 @@ public class SimpleLeLoadingView extends View {
 
     }
 
+    public void completeAnim(){
+        if(disappearAnim!=null){
+            disappearAnim.start();
+        }
+    }
+
     private void cancelRotateAnim() {
         if (rotateAnim.isRunning()) {
             rotateAnim.pause();
@@ -310,10 +387,40 @@ public class SimpleLeLoadingView extends View {
         return isDown;
     }
 
-    public void resetOriginals(){
-        if(rotateAnim!=null){
+    public void resetOriginals() {
+        if (rotateAnim != null) {
             rotateAnim.cancel();
             setRotation(0);
         }
     }
+
+    @Override
+    public void onAnimationUpdate(ValueAnimator animation) {
+        invalidate();
+    }
+
+    class EmptyAnimatorListener implements Animator.AnimatorListener {
+
+        @Override
+        public void onAnimationStart(Animator animation) {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animation) {
+
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animation) {
+
+        }
+
+    }
+
 }

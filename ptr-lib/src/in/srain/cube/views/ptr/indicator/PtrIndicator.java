@@ -124,7 +124,8 @@ public class PtrIndicator {
     }
 
     protected void updateHeight() {
-        mOffsetToRefresh = (int) (mRatioOfHeaderHeightToRefresh * mHeaderHeight);
+        //mOffsetToRefresh = (int) (mRatioOfHeaderHeightToRefresh * mHeaderHeight);
+        mOffsetToRefresh = mHeaderHeight;
     }
 
     public void convertFrom(PtrIndicator ptrSlider) {

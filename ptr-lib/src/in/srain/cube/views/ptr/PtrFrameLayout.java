@@ -3,6 +3,7 @@ package in.srain.cube.views.ptr;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.*;
 import android.widget.FrameLayout;
 import android.widget.Scroller;
@@ -514,6 +515,9 @@ public class PtrFrameLayout extends FrameLayout {
             return false;
         }
 
+        Log.e("zzzz","mPtrIndicator.isOverOffsetToKeepHeaderWhileLoading() --- "+mPtrIndicator.isOverOffsetToKeepHeaderWhileLoading());
+        Log.e("zzzz","isAutoRefresh() ---"+isAutoRefresh());
+        Log.e("zzzz","mPtrIndicator.isOverOffsetToRefresh() ---"+mPtrIndicator.isOverOffsetToRefresh());
         //
         if ((mPtrIndicator.isOverOffsetToKeepHeaderWhileLoading() && isAutoRefresh()) || mPtrIndicator.isOverOffsetToRefresh()) {
             mStatus = PTR_STATUS_LOADING;

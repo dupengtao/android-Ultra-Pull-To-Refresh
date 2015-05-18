@@ -1,7 +1,9 @@
 package in.srain.cube.views.ptr.demo.ui.header2;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import in.srain.cube.views.ptr.PtrFrameLayout;
@@ -29,6 +31,7 @@ public class SimpleLeLoadingHeader extends RelativeLayout implements PtrUIHandle
     }
 
     private void initView() {
+        this.setBackgroundColor(Color.parseColor("#3F51B5"));
         RelativeLayout.LayoutParams rLP = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,210);
         this.setLayoutParams(rLP);
         View rootView = View.inflate(mContext, R.layout.view_simpleleloading_header, this);
@@ -48,21 +51,24 @@ public class SimpleLeLoadingHeader extends RelativeLayout implements PtrUIHandle
     @Override
     public void onUIReset(PtrFrameLayout frame) {
         mSimpleLeLoadingView.resetOriginals();
+        Log.e("xxxx", "onUIReset ");
     }
 
     @Override
     public void onUIRefreshPrepare(PtrFrameLayout frame) {
-
+        mSimpleLeLoadingView.resetOriginals();
+        Log.e("xxxx", "onUIRefreshPrepare ");
     }
 
     @Override
     public void onUIRefreshBegin(PtrFrameLayout frame) {
-
+        Log.e("xxxx","onUIRefreshBegin --- percent ---");
     }
 
     @Override
     public void onUIRefreshComplete(PtrFrameLayout frame) {
-
+        mSimpleLeLoadingView.completeAnim();
+        Log.e("xxxx", "onUIRefreshComplete --- ");
     }
 
     @Override
@@ -74,5 +80,6 @@ public class SimpleLeLoadingHeader extends RelativeLayout implements PtrUIHandle
         }else {
             mSimpleLeLoadingView.resetOriginals();
         }
+        //Log.e("xxxx","onUIPositionChange --- percent ---"+ percent);
     }
 }
