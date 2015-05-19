@@ -9,7 +9,8 @@ import in.srain.cube.views.ptr.PtrClassicFrameLayout;
 import in.srain.cube.views.ptr.PtrDefaultHandler;
 import in.srain.cube.views.ptr.PtrFrameLayout;
 import in.srain.cube.views.ptr.demo.R;
-import in.srain.cube.views.ptr.demo.ui.header2.SimpleLeLoadingHeader;
+import in.srain.cube.views.ptr.leui.header.SimpleLeLoadingHeader;
+
 
 public class EvenOnlyATextView extends TitleBaseFragment {
 

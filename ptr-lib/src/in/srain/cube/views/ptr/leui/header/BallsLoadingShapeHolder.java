@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package in.srain.cube.views.ptr.demo.ui.header2;
+package in.srain.cube.views.ptr.leui.header;
 
 import android.graphics.Paint;
 import android.graphics.RadialGradient;
