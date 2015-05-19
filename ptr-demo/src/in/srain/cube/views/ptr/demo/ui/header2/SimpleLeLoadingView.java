@@ -22,13 +22,13 @@ import java.util.ArrayList;
  */
 public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorUpdateListener {
 
-    private static final int ROTATE_DURATION = 1200;
+    private static final int ROTATE_DURATION = 1000;
     private static final int DURATION = 1000;
     private static final int BALL_NUM = 6;
     private static final int DURATION2 = 100;
-    private static int PERCENT_OFFSET = DURATION / 6 / 2 * 3;
-    //private static int EVERY_DURATION = DURATION / 6 - PERCENT_OFFSET / 6;
-    private static int EVERY_DURATION = DURATION / 6;
+    private static int PERCENT_OFFSET = DURATION / 6 *2;
+    private static int EVERY_DURATION = DURATION / 6 - PERCENT_OFFSET / 6;
+    //private static int EVERY_DURATION = DURATION / 6;
     private float mBallRadius, mViewSize, mViewRadius;
     private ArrayList<BallsLoadingShapeHolder> mBalls = new ArrayList<>(6);
     private ArrayList<Integer> colorList = new ArrayList<>(6);
@@ -36,7 +36,6 @@ public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorU
     private ObjectAnimator[] mAppearAnimators;
     private long mLastPercent;
     private ObjectAnimator rotateAnim;
-    private long mPercentOffset;
 
     public SimpleLeLoadingView(Context context) {
         this(context, null);
@@ -252,10 +251,10 @@ public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorU
 
 
     public void setPercent(long percent) {
-        //if (percent < PERCENT_OFFSET) {
-        //    return;
-        //}
-        //percent -= PERCENT_OFFSET;
+        if (percent < PERCENT_OFFSET) {
+            return;
+        }
+        percent -= PERCENT_OFFSET;
         boolean isDown = getDirection(percent);
         if (percent <= EVERY_DURATION) {
             cancelRotateAnim();

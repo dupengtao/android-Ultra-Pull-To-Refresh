@@ -261,6 +261,14 @@ public class PtrFrameLayout extends FrameLayout {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent e) {
+
+        Log.e("zzzz", "dispatchTouchEvent [MotionEvent] status --" + mStatus);
+
+        if (mStatus == PTR_STATUS_COMPLETE || mStatus == PTR_STATUS_LOADING) {
+            return true;
+        }
+
+
         if (!isEnabled() || mContent == null || mHeaderView == null) {
             return dispatchTouchEventSupper(e);
         }
@@ -537,6 +545,8 @@ public class PtrFrameLayout extends FrameLayout {
         if (mPtrHandler != null) {
             mPtrHandler.onRefreshBegin(this);
         }
+
+        Log.e("zzzz","performRefresh status ----"+mStatus);
     }
 
     /**
@@ -980,6 +990,7 @@ public class PtrFrameLayout extends FrameLayout {
 
         public void abortIfWorking() {
             if (mIsRunning) {
+                Log.e("xxxx","abortIfWorking");
                 if (!mScroller.isFinished()) {
                     mScroller.forceFinished(true);
                 }
@@ -1007,6 +1018,7 @@ public class PtrFrameLayout extends FrameLayout {
                 mScroller.forceFinished(true);
             }
             mScroller.startScroll(0, 0, 0, distance, duration);
+            Log.e("xxxx","tryToScrollTo --- distance="+ distance +"--- duration="+duration);
             post(this);
             mIsRunning = true;
         }

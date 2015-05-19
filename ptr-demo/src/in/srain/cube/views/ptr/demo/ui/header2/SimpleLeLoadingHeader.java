@@ -1,7 +1,6 @@
 package in.srain.cube.views.ptr.demo.ui.header2;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -31,7 +30,7 @@ public class SimpleLeLoadingHeader extends RelativeLayout implements PtrUIHandle
     }
 
     private void initView() {
-        this.setBackgroundColor(Color.parseColor("#3F51B5"));
+        //this.setBackgroundColor(Color.parseColor("#3F51B5"));
         RelativeLayout.LayoutParams rLP = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,210);
         this.setLayoutParams(rLP);
         View rootView = View.inflate(mContext, R.layout.view_simpleleloading_header, this);
@@ -56,7 +55,7 @@ public class SimpleLeLoadingHeader extends RelativeLayout implements PtrUIHandle
 
     @Override
     public void onUIRefreshPrepare(PtrFrameLayout frame) {
-        mSimpleLeLoadingView.resetOriginals();
+        //mSimpleLeLoadingView.resetOriginals();
         Log.e("xxxx", "onUIRefreshPrepare ");
     }
 
