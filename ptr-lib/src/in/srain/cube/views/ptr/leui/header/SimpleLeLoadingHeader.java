@@ -15,9 +15,9 @@ import in.srain.cube.views.ptr.indicator.PtrIndicator;
  */
 public class SimpleLeLoadingHeader extends RelativeLayout implements PtrUIHandler {
     private Context mContext;
-    private PtrFrameLayout mPtrFrameLayout;
     //private PtrTensionIndicator mPtrTensionIndicator;
     private SimpleLeLoadingView mSimpleLeLoadingView;
+    private boolean needRest;
 
     public SimpleLeLoadingHeader(Context context) {
         this(context, null);
@@ -25,13 +25,13 @@ public class SimpleLeLoadingHeader extends RelativeLayout implements PtrUIHandle
 
     public SimpleLeLoadingHeader(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mContext=context;
+        mContext = context;
         initView();
     }
 
     private void initView() {
         //this.setBackgroundColor(Color.parseColor("#3F51B5"));
-        LayoutParams rLP = new LayoutParams(LayoutParams.MATCH_PARENT,210);
+        LayoutParams rLP = new LayoutParams(LayoutParams.MATCH_PARENT, 210);
         this.setLayoutParams(rLP);
         View rootView = View.inflate(mContext, R.layout.view_simpleleloading_header, this);
         mSimpleLeLoadingView = (SimpleLeLoadingView) rootView.findViewById(R.id.sllv);
@@ -42,14 +42,14 @@ public class SimpleLeLoadingHeader extends RelativeLayout implements PtrUIHandle
     }
 
     public void setUp(PtrFrameLayout ptrFrameLayout) {
-        mPtrFrameLayout = ptrFrameLayout;
+        //mPtrFrameLayout = ptrFrameLayout;
         //mPtrTensionIndicator = new PtrTensionIndicator();
         //mPtrFrameLayout.setPtrIndicator(mPtrTensionIndicator);
     }
 
     @Override
     public void onUIReset(PtrFrameLayout frame) {
-        mSimpleLeLoadingView.resetOriginals();
+        needRest = false;
         Log.e("xxxx", "onUIReset ");
     }
 
@@ -61,12 +61,15 @@ public class SimpleLeLoadingHeader extends RelativeLayout implements PtrUIHandle
 
     @Override
     public void onUIRefreshBegin(PtrFrameLayout frame) {
-        Log.e("xxxx","onUIRefreshBegin --- percent ---");
+        needRest = true;
+        Log.e("xxxx", "onUIRefreshBegin --- percent ---");
     }
 
     @Override
     public void onUIRefreshComplete(PtrFrameLayout frame) {
-        mSimpleLeLoadingView.completeAnim();
+        if (needRest) {
+            mSimpleLeLoadingView.completeAnim();
+        }
         Log.e("xxxx", "onUIRefreshComplete --- ");
     }
 
@@ -74,11 +77,19 @@ public class SimpleLeLoadingHeader extends RelativeLayout implements PtrUIHandle
     public void onUIPositionChange(PtrFrameLayout frame, boolean isUnderTouch, byte status, PtrIndicator ptrIndicator) {
         float percent = ptrIndicator.getCurrentPercent();
         long l = Float.valueOf(percent * 1000).longValue();
-        if(l>0) {
+        if (l > 0) {
             mSimpleLeLoadingView.setPercent(l);
-        }else {
+        } else {
             mSimpleLeLoadingView.resetOriginals();
         }
         //Log.e("xxxx","onUIPositionChange --- percent ---"+ percent);
+    }
+
+    public void setLastUpdateTimeKey(String key) {
+
+    }
+
+    public void setLastUpdateTimeRelateObject(Object object) {
+
     }
 }

@@ -2,10 +2,11 @@ package in.srain.cube.views.ptr;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import in.srain.cube.views.ptr.leui.header.SimpleLeLoadingHeader;
 
 public class PtrClassicFrameLayout extends PtrFrameLayout {
 
-    private PtrClassicDefaultHeader mPtrClassicHeader;
+    private SimpleLeLoadingHeader mPtrClassicHeader;
 
     public PtrClassicFrameLayout(Context context) {
         super(context);
@@ -23,12 +24,13 @@ public class PtrClassicFrameLayout extends PtrFrameLayout {
     }
 
     private void initViews() {
-        mPtrClassicHeader = new PtrClassicDefaultHeader(getContext());
+        //mPtrClassicHeader = new PtrClassicDefaultHeader(getContext());
+        mPtrClassicHeader = new SimpleLeLoadingHeader(getContext());
         setHeaderView(mPtrClassicHeader);
         addPtrUIHandler(mPtrClassicHeader);
     }
 
-    public PtrClassicDefaultHeader getHeader() {
+    public SimpleLeLoadingHeader getHeader() {
         return mPtrClassicHeader;
     }
 

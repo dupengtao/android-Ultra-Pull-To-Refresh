@@ -546,7 +546,7 @@ public class PtrFrameLayout extends FrameLayout {
             mPtrHandler.onRefreshBegin(this);
         }
 
-        Log.e("zzzz","performRefresh status ----"+mStatus);
+        Log.e("zzzz", "performRefresh status ----" + mStatus);
     }
 
     /**
