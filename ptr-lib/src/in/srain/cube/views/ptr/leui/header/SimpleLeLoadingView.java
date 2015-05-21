@@ -23,19 +23,22 @@ import java.util.ArrayList;
 public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorUpdateListener {
 
     private static final int ROTATE_DURATION = 1000;
+    private static final int DISAPPEAR_DURATION = 300;
     private static final int DURATION = 1000;
     private static final int BALL_NUM = 6;
-    private static final int DURATION2 = 100;
     private static int PERCENT_OFFSET = DURATION / 6 *2;
     private static int EVERY_DURATION = DURATION / 6 - PERCENT_OFFSET / 6;
     //private static int EVERY_DURATION = DURATION / 6;
     private float mBallRadius, mViewSize, mViewRadius;
     private ArrayList<BallsLoadingShapeHolder> mBalls = new ArrayList<>(6);
-    private ArrayList<Integer> colorList = new ArrayList<>(6);
-    private AnimatorSet appearAnim , disappearAnim;
+    private ArrayList<Integer> mColorList = new ArrayList<>(6);
+    private AnimatorSet mDisappearAnim;
     private ObjectAnimator[] mAppearAnimators;
     private long mLastPercent;
-    private ObjectAnimator rotateAnim;
+    private ObjectAnimator mRotateAnim;
+
+    //new
+    private float rot;
 
     public SimpleLeLoadingView(Context context) {
         this(context, null);
@@ -56,7 +59,7 @@ public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorU
 
 
     private void init(int layout_width, int layout_height) {
-        colorList.addAll(getDefaultColorList());
+        mColorList.addAll(getDefaultColorList());
         prepare(layout_width, layout_height);
         preAnim();
     }
@@ -79,7 +82,7 @@ public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorU
             PointF pointF = new PointF();
             pointF.set((float) (mViewSize / 2 + drawRadius * Math.sin(i * angleUnit * Math.PI / 180)),
                     (float) (mViewSize / 2 - drawRadius * Math.cos(i * angleUnit * Math.PI / 180)));
-            mBalls.add(addBall(pointF.x, pointF.y, colorList.get(i)));
+            mBalls.add(addBall(pointF.x, pointF.y, mColorList.get(i)));
         }
     }
 
@@ -101,13 +104,18 @@ public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorU
 
     private void preAnim() {
         preAppearAnim();
-        rotateAnim = preRotateAnim();
+        mRotateAnim = preRotateAnim2();
         preDisappearAnim();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        if (mRotateAnim.isRunning()) {
+            canvas.rotate(rot, canvas.getWidth() / 2, canvas.getHeight() / 2);
+        }
+
         for (BallsLoadingShapeHolder ball : mBalls) {
             if (ball.getShape().getAlpha() <= 0) {
                 continue;
@@ -133,12 +141,43 @@ public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorU
         initBall();
     }
 
-    public ObjectAnimator preRotateAnim() {
+    private ObjectAnimator preRotateAnim() {
         PropertyValuesHolder rotation = PropertyValuesHolder.ofFloat("rotation",
                 0, 360);
         ObjectAnimator rotateAnim = ObjectAnimator.ofPropertyValuesHolder(this, rotation).setDuration(ROTATE_DURATION);
         rotateAnim.setRepeatCount(-1); // -1:Infinite loop
         rotateAnim.setInterpolator(new LinearInterpolator());
+        return rotateAnim;
+    }
+
+    private ObjectAnimator preRotateAnim2() {
+        PropertyValuesHolder rotation = PropertyValuesHolder.ofFloat("rot",
+                0, 360);
+        //PropertyValuesHolder rotation = PropertyValuesHolder.ofFloat("rotation",
+        //        0, 360);
+        ObjectAnimator rotateAnim = ObjectAnimator.ofPropertyValuesHolder(this, rotation).setDuration(ROTATE_DURATION);
+        rotateAnim.setRepeatCount(-1); // -1:Infinite loop
+        rotateAnim.setInterpolator(new LinearInterpolator());
+        rotateAnim.addUpdateListener(this);
+        rotateAnim.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+                SimpleLeLoadingView.this.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                SimpleLeLoadingView.this.setLayerType(View.LAYER_TYPE_NONE, null);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                super.onAnimationCancel(animation);
+                SimpleLeLoadingView.this.setLayerType(View.LAYER_TYPE_NONE, null);
+            }
+        });
         return rotateAnim;
     }
 
@@ -164,7 +203,7 @@ public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorU
         return z2nAnim;
     }
 
-    private AnimatorSet preAppearAnim() {
+    private void preAppearAnim() {
         mAppearAnimators = new ObjectAnimator[mBalls.size()];
         for (int i = 0, j = mBalls.size(); i < j; i++) {
             //0-normal
@@ -181,9 +220,9 @@ public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorU
             //    }
             //});
         }
-        appearAnim = new AnimatorSet();
-        appearAnim.playTogether(mAppearAnimators);
-        return appearAnim;
+        //appearAnim = new AnimatorSet();
+        //appearAnim.playTogether(mAppearAnimators);
+        //return appearAnim;
     }
 
 
@@ -200,7 +239,7 @@ public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorU
         PropertyValuesHolder pvTY = PropertyValuesHolder.ofFloat("y", ball.getY(),
                 mViewSize / 2);
         ObjectAnimator z2nAnim = ObjectAnimator.ofPropertyValuesHolder(
-                ball, pvhW, pvhH, pvTX, pvTY).setDuration(DURATION2*3 );
+                ball, pvhW, pvhH, pvTX, pvTY).setDuration(DISAPPEAR_DURATION);
         //z2nAnim.setStartDelay(75 * orderId);
         z2nAnim.setInterpolator(new AccelerateInterpolator());
         z2nAnim.addUpdateListener(this);
@@ -209,15 +248,15 @@ public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorU
 
 
 
-    public void preDisappearAnim() {
+    private void preDisappearAnim() {
 
-        if (disappearAnim == null) {
+        if (mDisappearAnim == null) {
             final ObjectAnimator[] mAnimators = new ObjectAnimator[mBalls.size()];
             for (int i = 0, j = mBalls.size(); i < j; i++) {
                 //0-normal
                 mAnimators[i] = getNormal2Zero(mBalls.get(i), i);
                 mAnimators[i].setTarget(mBalls.get(i));
-                mAnimators[i].addListener(new EmptyAnimatorListener() {
+                mAnimators[i].addListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         ObjectAnimator objectAnimator = (ObjectAnimator) animation;
@@ -228,25 +267,25 @@ public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorU
                     }
                 });
             }
-            disappearAnim = new AnimatorSet();
-            disappearAnim.addListener(new EmptyAnimatorListener() {
+            mDisappearAnim = new AnimatorSet();
+            mDisappearAnim.addListener(new AnimatorListenerAdapter() {
 
                 @Override
                 public void onAnimationStart(Animator animation) {
                     super.onAnimationStart(animation);
-                    rotateAnim.pause();
+                    mRotateAnim.pause();
                 }
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
-                    //rotateAnim.cancel();
+                    //mRotateAnim.cancel();
                     resetOriginals();
                 }
             });
-            disappearAnim.playTogether(mAnimators);
+            mDisappearAnim.playTogether(mAnimators);
         }
-        //disappearAnim.start();
+        //mDisappearAnim.start();
     }
 
 
@@ -348,28 +387,28 @@ public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorU
             makeCurPlayTime(mAppearAnimators[5], EVERY_DURATION);
             invalidate();
 
-            if (rotateAnim.isPaused()) {
-                rotateAnim.resume();
-            } else if (!rotateAnim.isRunning()) {
-                rotateAnim.start();
+            if (mRotateAnim.isPaused()) {
+                mRotateAnim.resume();
+            } else if (!mRotateAnim.isRunning()) {
+                mRotateAnim.start();
             }
 
-            //if (!rotateAnim.isRunning() || rotateAnim.isPaused()) {
-            //    rotateAnim.start();
+            //if (!mRotateAnim.isRunning() || mRotateAnim.isPaused()) {
+            //    mRotateAnim.start();
             //}
         }
 
     }
 
     public void completeAnim(){
-        if(disappearAnim!=null){
-            disappearAnim.start();
+        if(mDisappearAnim !=null){
+            mDisappearAnim.start();
         }
     }
 
     private void cancelRotateAnim() {
-        if (rotateAnim.isRunning()) {
-            rotateAnim.pause();
+        if (mRotateAnim.isRunning()) {
+            mRotateAnim.pause();
         }
     }
 
@@ -387,39 +426,26 @@ public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorU
     }
 
     public void resetOriginals() {
-        if (rotateAnim != null) {
-            rotateAnim.cancel();
+        if (mRotateAnim != null) {
+            mRotateAnim.cancel();
             setRotation(0);
         }
     }
 
     @Override
     public void onAnimationUpdate(ValueAnimator animation) {
-        invalidate();
+        //invalidate();
+        int x = (int) getX()+1;
+        int y = (int) getY()+1;
+        invalidate(x, y, x + 672, y +672);
     }
 
-    class EmptyAnimatorListener implements Animator.AnimatorListener {
+    public float getRot() {
+        return rot;
+    }
 
-        @Override
-        public void onAnimationStart(Animator animation) {
-
-        }
-
-        @Override
-        public void onAnimationEnd(Animator animation) {
-
-        }
-
-        @Override
-        public void onAnimationCancel(Animator animation) {
-
-        }
-
-        @Override
-        public void onAnimationRepeat(Animator animation) {
-
-        }
-
+    public void setRot(float rot) {
+        this.rot = rot;
     }
 
 }
