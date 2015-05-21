@@ -1,5 +1,6 @@
 package in.srain.cube.views.ptr.demo.ui.classic;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ import in.srain.cube.views.ptr.PtrHandler;
 import in.srain.cube.views.ptr.demo.R;
 import in.srain.cube.views.ptr.demo.data.DemoRequestData;
 import in.srain.cube.views.ptr.demo.ui.MaterialStyleFragment;
+import in.srain.cube.views.ptr.leui.header.SimpleLeLoadingHeader;
 
 public class WithGridView extends TitleBaseFragment {
 
@@ -76,6 +78,13 @@ public class WithGridView extends TitleBaseFragment {
                 return PtrDefaultHandler.checkContentCanBePulledDown(frame, content, header);
             }
         });
+
+        SimpleLeLoadingHeader defaultHeader = mPtrFrame.getDefaultHeader();
+        int c = Color.parseColor("#8bc34a");
+        defaultHeader.setEachColor4Balls(c,c,c,c,c,c);
+
+        /*
+
         // the following are default settings
         mPtrFrame.setResistance(1.7f);
         mPtrFrame.setRatioOfHeaderHeightToRefresh(1.2f);
@@ -93,6 +102,7 @@ public class WithGridView extends TitleBaseFragment {
         }, 100);
         // updateData();
         setupViews(mPtrFrame);
+        */
         return contentView;
     }
 

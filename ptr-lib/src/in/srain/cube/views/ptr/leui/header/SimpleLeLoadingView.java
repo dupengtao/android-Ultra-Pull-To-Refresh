@@ -448,4 +448,22 @@ public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorU
         this.rot = rot;
     }
 
+    private void restInit(){
+        initBall();
+    }
+
+    public void setEachColor4Balls(int color1,int color2,int color3,int color4,int color5,int color6){
+        mColorList.clear();
+        mColorList.add(color1);
+        mColorList.add(color2);
+        mColorList.add(color3);
+        mColorList.add(color4);
+        mColorList.add(color5);
+        mColorList.add(color6);
+        for (int i=0;i<BALL_NUM;i++){
+            BallsLoadingShapeHolder shapeHolder = mBalls.get(i);
+            shapeHolder.getPaint().setColor(mColorList.get(i));
+        }
+    }
+
 }

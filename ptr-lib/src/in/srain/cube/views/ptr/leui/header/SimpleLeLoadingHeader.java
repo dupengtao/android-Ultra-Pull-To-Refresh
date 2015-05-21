@@ -10,6 +10,8 @@ import in.srain.cube.views.ptr.PtrUIHandler;
 import in.srain.cube.views.ptr.R;
 import in.srain.cube.views.ptr.indicator.PtrIndicator;
 
+import java.util.ArrayList;
+
 /**
  * Created by dupengtao on 15-5-14.
  */
@@ -91,5 +93,13 @@ public class SimpleLeLoadingHeader extends RelativeLayout implements PtrUIHandle
 
     public void setLastUpdateTimeRelateObject(Object object) {
 
+    }
+
+    public ArrayList<Integer> getDefaultColorList(){
+        return mSimpleLeLoadingView.getDefaultColorList();
+    }
+
+    public void setEachColor4Balls(int color1,int color2,int color3,int color4,int color5,int color6){
+        mSimpleLeLoadingView.setEachColor4Balls(color1, color2, color3, color4, color5, color6);
     }
 }

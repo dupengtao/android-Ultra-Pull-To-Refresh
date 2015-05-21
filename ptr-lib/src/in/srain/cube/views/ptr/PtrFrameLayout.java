@@ -9,6 +9,7 @@ import android.widget.FrameLayout;
 import android.widget.Scroller;
 import android.widget.TextView;
 import in.srain.cube.views.ptr.indicator.PtrIndicator;
+import in.srain.cube.views.ptr.leui.header.SimpleLeLoadingHeader;
 import in.srain.cube.views.ptr.util.PtrCLog;
 
 /**
@@ -920,6 +921,13 @@ public class PtrFrameLayout extends FrameLayout {
         final MotionEvent last = mLastMoveEvent;
         MotionEvent e = MotionEvent.obtain(last.getDownTime(), last.getEventTime(), MotionEvent.ACTION_DOWN, last.getX(), last.getY(), last.getMetaState());
         dispatchTouchEventSupper(e);
+    }
+
+    public SimpleLeLoadingHeader getDefaultHeader(){
+        if(mHeaderView instanceof SimpleLeLoadingHeader){
+            return (SimpleLeLoadingHeader)mHeaderView;
+        }
+        return null;
     }
 
     public static class LayoutParams extends MarginLayoutParams {
