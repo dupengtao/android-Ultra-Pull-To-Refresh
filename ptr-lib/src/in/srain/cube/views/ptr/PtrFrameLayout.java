@@ -10,6 +10,7 @@ import android.widget.Scroller;
 import android.widget.TextView;
 import in.srain.cube.views.ptr.indicator.PtrIndicator;
 import in.srain.cube.views.ptr.leui.header.SimpleLeLoadingHeader;
+import in.srain.cube.views.ptr.leui.util.LogHelper;
 import in.srain.cube.views.ptr.util.PtrCLog;
 
 /**
@@ -263,13 +264,10 @@ public class PtrFrameLayout extends FrameLayout {
     @Override
     public boolean dispatchTouchEvent(MotionEvent e) {
 
-        Log.e("zzzz", "dispatchTouchEvent [MotionEvent] status --" + mStatus);
-
+        LogHelper.e(LOG_TAG, "dispatchTouchEvent [MotionEvent] status --" + mStatus);
         if (mStatus == PTR_STATUS_COMPLETE || mStatus == PTR_STATUS_LOADING) {
             return true;
         }
-
-
         if (!isEnabled() || mContent == null || mHeaderView == null) {
             return dispatchTouchEventSupper(e);
         }
@@ -524,9 +522,9 @@ public class PtrFrameLayout extends FrameLayout {
             return false;
         }
 
-        Log.e("zzzz","mPtrIndicator.isOverOffsetToKeepHeaderWhileLoading() --- "+mPtrIndicator.isOverOffsetToKeepHeaderWhileLoading());
-        Log.e("zzzz","isAutoRefresh() ---"+isAutoRefresh());
-        Log.e("zzzz","mPtrIndicator.isOverOffsetToRefresh() ---"+mPtrIndicator.isOverOffsetToRefresh());
+        LogHelper.e(LOG_TAG,"mPtrIndicator.isOverOffsetToKeepHeaderWhileLoading() --- "+mPtrIndicator.isOverOffsetToKeepHeaderWhileLoading());
+        LogHelper.e(LOG_TAG,"isAutoRefresh() ---"+isAutoRefresh());
+        LogHelper.e(LOG_TAG,"mPtrIndicator.isOverOffsetToRefresh() ---"+mPtrIndicator.isOverOffsetToRefresh());
         //
         if ((mPtrIndicator.isOverOffsetToKeepHeaderWhileLoading() && isAutoRefresh()) || mPtrIndicator.isOverOffsetToRefresh()) {
             mStatus = PTR_STATUS_LOADING;
@@ -547,7 +545,7 @@ public class PtrFrameLayout extends FrameLayout {
             mPtrHandler.onRefreshBegin(this);
         }
 
-        Log.e("zzzz", "performRefresh status ----" + mStatus);
+        LogHelper.e(LOG_TAG, "performRefresh status ----" + mStatus);
     }
 
     /**
@@ -998,7 +996,7 @@ public class PtrFrameLayout extends FrameLayout {
 
         public void abortIfWorking() {
             if (mIsRunning) {
-                Log.e("xxxx","abortIfWorking");
+                LogHelper.e(LOG_TAG, "abortIfWorking");
                 if (!mScroller.isFinished()) {
                     mScroller.forceFinished(true);
                 }
@@ -1026,7 +1024,7 @@ public class PtrFrameLayout extends FrameLayout {
                 mScroller.forceFinished(true);
             }
             mScroller.startScroll(0, 0, 0, distance, duration);
-            Log.e("xxxx","tryToScrollTo --- distance="+ distance +"--- duration="+duration);
+            Log.e(LOG_TAG,"tryToScrollTo --- distance="+ distance +"--- duration="+duration);
             post(this);
             mIsRunning = true;
         }

@@ -2,13 +2,13 @@ package in.srain.cube.views.ptr.leui.header;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import in.srain.cube.views.ptr.PtrFrameLayout;
 import in.srain.cube.views.ptr.PtrUIHandler;
 import in.srain.cube.views.ptr.R;
 import in.srain.cube.views.ptr.indicator.PtrIndicator;
+import in.srain.cube.views.ptr.leui.util.LogHelper;
 
 import java.util.ArrayList;
 
@@ -16,6 +16,8 @@ import java.util.ArrayList;
  * Created by dupengtao on 15-5-14.
  */
 public class SimpleLeLoadingHeader extends RelativeLayout implements PtrUIHandler {
+
+    private static final String LOG_TAG = "SimpleLeLoadingHeader";
     private Context mContext;
     //private PtrTensionIndicator mPtrTensionIndicator;
     private SimpleLeLoadingView mSimpleLeLoadingView;
@@ -52,19 +54,19 @@ public class SimpleLeLoadingHeader extends RelativeLayout implements PtrUIHandle
     @Override
     public void onUIReset(PtrFrameLayout frame) {
         needRest = false;
-        Log.e("xxxx", "onUIReset ");
+        LogHelper.e(LOG_TAG, "onUIReset ");
     }
 
     @Override
     public void onUIRefreshPrepare(PtrFrameLayout frame) {
         //mSimpleLeLoadingView.resetOriginals();
-        Log.e("xxxx", "onUIRefreshPrepare ");
+        LogHelper.e(LOG_TAG, "onUIRefreshPrepare ");
     }
 
     @Override
     public void onUIRefreshBegin(PtrFrameLayout frame) {
         needRest = true;
-        Log.e("xxxx", "onUIRefreshBegin --- percent ---");
+        LogHelper.e(LOG_TAG, "onUIRefreshBegin --- percent ---");
     }
 
     @Override
@@ -72,7 +74,7 @@ public class SimpleLeLoadingHeader extends RelativeLayout implements PtrUIHandle
         if (needRest) {
             mSimpleLeLoadingView.completeAnim();
         }
-        Log.e("xxxx", "onUIRefreshComplete --- ");
+        LogHelper.e(LOG_TAG, "onUIRefreshComplete --- ");
     }
 
     @Override

@@ -66,10 +66,13 @@ public class WithGridView extends TitleBaseFragment {
         gridListView.setAdapter(mAdapter);
 
         mPtrFrame = (PtrClassicFrameLayout) contentView.findViewById(R.id.rotate_header_grid_view_frame);
-        mPtrFrame.setLastUpdateTimeRelateObject(this);
+        //mPtrFrame.setLastUpdateTimeRelateObject(this);
+
+        //数据加载回调函数
         mPtrFrame.setPtrHandler(new PtrHandler() {
             @Override
             public void onRefreshBegin(PtrFrameLayout frame) {
+                //开始-加载数据（联网加载）
                 updateData();
             }
 
@@ -79,9 +82,19 @@ public class WithGridView extends TitleBaseFragment {
             }
         });
 
+        //定义头部小球颜色
         SimpleLeLoadingHeader defaultHeader = mPtrFrame.getDefaultHeader();
         int c = Color.parseColor("#8bc34a");
         defaultHeader.setEachColor4Balls(c,c,c,c,c,c);
+
+        //自动刷新
+        mPtrFrame.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mPtrFrame.autoRefresh();
+            }
+        }, 100);
+
 
         /*
 
