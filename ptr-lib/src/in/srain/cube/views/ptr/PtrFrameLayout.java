@@ -200,7 +200,7 @@ public class PtrFrameLayout extends FrameLayout {
                 PtrCLog.d(LOG_TAG, "onMeasure content, width: %s, height: %s, margin: %s %s %s %s",
                         getMeasuredWidth(), getMeasuredHeight(),
                         lp.leftMargin, lp.topMargin, lp.rightMargin, lp.bottomMargin);
-                PtrCLog.d(LOG_TAG, "onMeasure, mCurrentPos: %s, mLastPos: %s, top: %s",
+                PtrCLog.d(LOG_TAG, "onMeasure, currentPos: %s, lastPos: %s, top: %s",
                         mPtrIndicator.getCurrentPosY(), mPtrIndicator.getLastPosY(), mContent.getTop());
             }
         }
@@ -295,17 +295,24 @@ public class PtrFrameLayout extends FrameLayout {
                 mScrollChecker.abortIfWorking();
 
                 mPreventForHorizontal = false;
-                if (mPtrIndicator.hasLeftStartPosition()) {
-                    // do nothing, intercept child event
-                } else {
-                    dispatchTouchEventSupper(e);
-                }
+//<<<<<<< HEAD
+//                if (mPtrIndicator.hasLeftStartPosition()) {
+//                    // do nothing, intercept child event
+//                } else {
+//                    dispatchTouchEventSupper(e);
+//                }
+//=======
+                // The cancel event will be sent once the position is moved.
+                // So let the event pass to children.
+                // fix #93, #102
+                return dispatchTouchEventSupper(e);
+//>>>>>>> dc40950... The cancel event will be send once the position is moved, so pass the event to children when press down, fix #93, fix #102; Also fix #63
 
-                if (mStatus == PTR_STATUS_COMPLETE || mStatus == PTR_STATUS_LOADING) {
-                    return dispatchTouchEventSupper(e);
-                }
-
-                return true;
+                //if (mStatus == PTR_STATUS_COMPLETE || mStatus == PTR_STATUS_LOADING) {
+                //    return dispatchTouchEventSupper(e);
+                //}
+                //
+                //return true;
                 //return dispatchTouchEventSupper(e);
             case MotionEvent.ACTION_MOVE:
                 mLastMoveEvent = e;
@@ -328,7 +335,7 @@ public class PtrFrameLayout extends FrameLayout {
 
                 if (DEBUG) {
                     boolean canMoveDown = mPtrHandler != null && mPtrHandler.checkCanDoRefresh(this, mContent, mHeaderView);
-                    PtrCLog.v(LOG_TAG, "ACTION_MOVE: offsetY:%s, mCurrentPos: %s, moveUp: %s, canMoveUp: %s, moveDown: %s: canMoveDown: %s", offsetY, mPtrIndicator.getCurrentPosY(), moveUp, canMoveUp, moveDown, canMoveDown);
+                    PtrCLog.v(LOG_TAG, "ACTION_MOVE: offsetY:%s, currentPos: %s, moveUp: %s, canMoveUp: %s, moveDown: %s: canMoveDown: %s", offsetY, mPtrIndicator.getCurrentPosY(), moveUp, canMoveUp, moveDown, canMoveDown);
                 }
 
                 // disable move when header not reach top
@@ -1007,7 +1014,7 @@ public class PtrFrameLayout extends FrameLayout {
             if (DEBUG) {
                 if (deltaY != 0) {
                     PtrCLog.v(LOG_TAG,
-                            "scroll: %s, start: %s, to: %s, mCurrentPos: %s, current :%s, last: %s, delta: %s",
+                            "scroll: %s, start: %s, to: %s, currentPos: %s, current :%s, last: %s, delta: %s",
                             finish, mStart, mTo, mPtrIndicator.getCurrentPosY(), curY, mLastFlingY, deltaY);
                 }
             }
@@ -1022,7 +1029,7 @@ public class PtrFrameLayout extends FrameLayout {
 
         private void finish() {
             if (DEBUG) {
-                PtrCLog.v(LOG_TAG, "finish, mCurrentPos:%s", mPtrIndicator.getCurrentPosY());
+                PtrCLog.v(LOG_TAG, "finish, currentPos:%s", mPtrIndicator.getCurrentPosY());
             }
             reset();
             onPtrScrollFinish();
