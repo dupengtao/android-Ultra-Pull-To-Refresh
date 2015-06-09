@@ -303,7 +303,6 @@ public class PtrFrameLayout extends FrameLayout {
                 // The cancel event will be sent once the position is moved.
                 // So let the event pass to children.
                 // fix #93, #102
-                return dispatchTouchEventSupper(e);
 //>>>>>>> dc40950... The cancel event will be send once the position is moved, so pass the event to children when press down, fix #93, fix #102; Also fix #63
 
                 //if (mStatus == PTR_STATUS_COMPLETE || mStatus == PTR_STATUS_LOADING) {
@@ -312,6 +311,8 @@ public class PtrFrameLayout extends FrameLayout {
                 //
                 //return true;
                 //return dispatchTouchEventSupper(e);
+                dispatchTouchEventSupper(e);
+                return true;
             case MotionEvent.ACTION_MOVE:
                 mLastMoveEvent = e;
                 mPtrIndicator.onMove(e.getX(), e.getY());
