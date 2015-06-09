@@ -597,6 +597,15 @@ public class PtrFrameLayout extends FrameLayout {
     }
 
     /**
+     * Detect whether is refreshing.
+     *
+     * @return
+     */
+    public boolean isRefreshing() {
+        return mStatus == PTR_STATUS_LOADING;
+    }
+
+    /**
      * Call this when data is loaded.
      * The UI will perform complete at once or after a delay, depends on the time elapsed is greater then {@link #mLoadingMinTime} or not.
      */
@@ -823,6 +832,11 @@ public class PtrFrameLayout extends FrameLayout {
         return mDurationToClose;
     }
 
+    /**
+     * The duration to return back to the refresh position
+     *
+     * @param duration
+     */
     public void setDurationToClose(int duration) {
         mDurationToClose = duration;
     }
@@ -832,6 +846,11 @@ public class PtrFrameLayout extends FrameLayout {
         return mDurationToCloseHeader;
     }
 
+    /**
+     * The duration to close time
+     *
+     * @param duration
+     */
     public void setDurationToCloseHeader(int duration) {
         mDurationToCloseHeader = duration;
     }
