@@ -265,9 +265,6 @@ public class PtrFrameLayout extends FrameLayout {
     public boolean dispatchTouchEvent(MotionEvent e) {
 
         LogHelper.e(LOG_TAG, "dispatchTouchEvent [MotionEvent] status --" + mStatus);
-        if (mStatus == PTR_STATUS_COMPLETE || mStatus == PTR_STATUS_LOADING) {
-            return true;
-        }
         if (!isEnabled() || mContent == null || mHeaderView == null) {
             return dispatchTouchEventSupper(e);
         }
@@ -303,8 +300,13 @@ public class PtrFrameLayout extends FrameLayout {
                 } else {
                     dispatchTouchEventSupper(e);
                 }
-                return true;
 
+                if (mStatus == PTR_STATUS_COMPLETE || mStatus == PTR_STATUS_LOADING) {
+                    return dispatchTouchEventSupper(e);
+                }
+
+                return true;
+                //return dispatchTouchEventSupper(e);
             case MotionEvent.ACTION_MOVE:
                 mLastMoveEvent = e;
                 mPtrIndicator.onMove(e.getX(), e.getY());
@@ -333,8 +335,16 @@ public class PtrFrameLayout extends FrameLayout {
                 if (moveDown && mPtrHandler != null && !mPtrHandler.checkCanDoRefresh(this, mContent, mHeaderView)) {
                     return dispatchTouchEventSupper(e);
                 }
-
+                // start optimize refresh
+                int currentPosY = mPtrIndicator.getCurrentPosY();
+                int lastPosY = mPtrIndicator.getLastPosY();
+                LogHelper.e(LOG_TAG, "ACTION_MOVE ---- currentPosY ----" + currentPosY +" ---- lastPosY ----"+lastPosY);
+                if(mStatus == PTR_STATUS_LOADING && moveDown && lastPosY >=mHeaderHeight){
+                    return dispatchTouchEventSupper(e);
+                }
+                //end optimize refresh
                 if ((moveUp && canMoveUp) || moveDown) {
+                    LogHelper.e("offsetY", "offsetY----" + offsetY);
                     movePos(offsetY);
                     return true;
                 }
@@ -491,7 +501,9 @@ public class PtrFrameLayout extends FrameLayout {
      * Scroll back to to if is not under touch
      */
     private void tryScrollBackToTop() {
+        LogHelper.e(LOG_TAG,"tryToScrollTo  tryScrollBackToTop1");
         if (!mPtrIndicator.isUnderTouch()) {
+            LogHelper.e(LOG_TAG,"tryToScrollTo  tryScrollBackToTop2");
             mScrollChecker.tryToScrollTo(PtrIndicator.POS_START, mDurationToCloseHeader);
         }
     }
@@ -658,6 +670,7 @@ public class PtrFrameLayout extends FrameLayout {
             }
             mPtrUIHandlerHolder.onUIRefreshComplete(this);
         }
+        LogHelper.e(LOG_TAG,"tryToScrollTo notifyUIRefreshComplete");
         mPtrIndicator.onUIRefreshComplete();
         tryScrollBackToTopAfterComplete();
         tryToNotifyReset();
@@ -711,6 +724,7 @@ public class PtrFrameLayout extends FrameLayout {
      *
      * @param enable
      */
+    @Deprecated
     public void setEnabledNextPtrAtOnce(boolean enable) {
         if (enable) {
             mFlag = mFlag | FLAG_ENABLE_NEXT_PTR_AT_ONCE;
@@ -719,6 +733,7 @@ public class PtrFrameLayout extends FrameLayout {
         }
     }
 
+    @Deprecated
     public boolean isEnabledNextPtrAtOnce() {
         return (mFlag & FLAG_ENABLE_NEXT_PTR_AT_ONCE) > 0;
     }
@@ -728,6 +743,7 @@ public class PtrFrameLayout extends FrameLayout {
      *
      * @param pinContent
      */
+    @Deprecated
     public void setPinContent(boolean pinContent) {
         if (pinContent) {
             mFlag = mFlag | FLAG_PIN_CONTENT;
@@ -736,6 +752,7 @@ public class PtrFrameLayout extends FrameLayout {
         }
     }
 
+    @Deprecated
     public boolean isPinContent() {
         return (mFlag & FLAG_PIN_CONTENT) > 0;
     }
@@ -926,6 +943,10 @@ public class PtrFrameLayout extends FrameLayout {
             return (SimpleLeLoadingHeader)mHeaderView;
         }
         return null;
+    }
+
+    public byte getStatus() {
+        return mStatus;
     }
 
     public static class LayoutParams extends MarginLayoutParams {

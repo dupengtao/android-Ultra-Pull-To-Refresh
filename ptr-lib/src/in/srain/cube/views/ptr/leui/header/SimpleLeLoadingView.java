@@ -22,7 +22,7 @@ import java.util.ArrayList;
  */
 public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorUpdateListener {
 
-    private static final int ROTATE_DURATION = 1000;
+    private static final int ROTATE_DURATION = 900;
     private static final int DISAPPEAR_DURATION = 300;
     private static final int DURATION = 1000;
     private static final int BALL_NUM = 6;
@@ -67,11 +67,11 @@ public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorU
     public ArrayList<Integer> getDefaultColorList() {
         ArrayList<Integer> colorList = new ArrayList<>(6);
         colorList.add(Color.parseColor("#ed1e20"));
-        colorList.add(Color.parseColor("#6c24c6"));
+        colorList.add(Color.parseColor("#8c50e7"));
         colorList.add(Color.parseColor("#1ab1eb"));
-        colorList.add(Color.parseColor("#8ad127"));
-        colorList.add(Color.parseColor("#ffd800"));
-        colorList.add(Color.parseColor("#ff8a00"));
+        colorList.add(Color.parseColor("#80cb17"));
+        colorList.add(Color.parseColor("#ffd200"));
+        colorList.add(Color.parseColor("#ff8400"));
         return colorList;
     }
 
@@ -463,6 +463,23 @@ public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorU
         for (int i=0;i<BALL_NUM;i++){
             BallsLoadingShapeHolder shapeHolder = mBalls.get(i);
             shapeHolder.getPaint().setColor(mColorList.get(i));
+        }
+    }
+
+    public void autoPull2RefreshAnim() {
+        for(BallsLoadingShapeHolder holder : mBalls){
+            holder.setAlpha(1f);
+        }
+        if (mRotateAnim.isPaused()) {
+            mRotateAnim.resume();
+        } else if (!mRotateAnim.isRunning()) {
+            mRotateAnim.start();
+        }
+    }
+
+    public void cancelAutoPull2RefreshAnim(){
+        if(mRotateAnim.isRunning()){
+            mRotateAnim.pause();
         }
     }
 

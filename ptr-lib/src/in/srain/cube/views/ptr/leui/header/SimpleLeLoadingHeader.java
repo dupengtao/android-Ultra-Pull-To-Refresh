@@ -34,7 +34,7 @@ public class SimpleLeLoadingHeader extends RelativeLayout implements PtrUIHandle
     }
 
     private void initView() {
-        //this.setBackgroundColor(Color.parseColor("#3F51B5"));
+        //this.setBackgroundColor(Color.parseColor("#ebebeb"));
         LayoutParams rLP = new LayoutParams(LayoutParams.MATCH_PARENT, 210);
         this.setLayoutParams(rLP);
         View rootView = View.inflate(mContext, R.layout.view_simpleleloading_header, this);
@@ -55,6 +55,11 @@ public class SimpleLeLoadingHeader extends RelativeLayout implements PtrUIHandle
     public void onUIReset(PtrFrameLayout frame) {
         needRest = false;
         LogHelper.e(LOG_TAG, "onUIReset ");
+        if(frame.isAutoRefresh()){
+            LogHelper.e(LOG_TAG,"AutoRefresh --- onUIReset");
+            //mSimpleLeLoadingView.autoPull2RefreshAnim();
+            mSimpleLeLoadingView.cancelAutoPull2RefreshAnim();
+        }
     }
 
     @Override
@@ -67,18 +72,34 @@ public class SimpleLeLoadingHeader extends RelativeLayout implements PtrUIHandle
     public void onUIRefreshBegin(PtrFrameLayout frame) {
         needRest = true;
         LogHelper.e(LOG_TAG, "onUIRefreshBegin --- percent ---");
+
+        if(frame.isAutoRefresh()){
+            LogHelper.e(LOG_TAG,"AutoRefresh --- onUIRefreshBegin");
+            mSimpleLeLoadingView.autoPull2RefreshAnim();
+        }
     }
 
     @Override
     public void onUIRefreshComplete(PtrFrameLayout frame) {
         if (needRest) {
-            mSimpleLeLoadingView.completeAnim();
+            //byte st = frame.getStatus();
+            //if (st == PtrFrameLayout.PTR_STATUS_COMPLETE || st == PtrFrameLayout.PTR_STATUS_LOADING) {
+            //    return ;
+            //}
+            //mSimpleLeLoadingView.completeAnim();
         }
         LogHelper.e(LOG_TAG, "onUIRefreshComplete --- ");
     }
 
     @Override
     public void onUIPositionChange(PtrFrameLayout frame, boolean isUnderTouch, byte status, PtrIndicator ptrIndicator) {
+
+        // start optimize refresh
+        byte st = frame.getStatus();
+        if (st == PtrFrameLayout.PTR_STATUS_COMPLETE || st == PtrFrameLayout.PTR_STATUS_LOADING) {
+            return ;
+        }
+        // end optimize refresh
         float percent = ptrIndicator.getCurrentPercent();
         long l = Float.valueOf(percent * 1000).longValue();
         if (l > 0) {
