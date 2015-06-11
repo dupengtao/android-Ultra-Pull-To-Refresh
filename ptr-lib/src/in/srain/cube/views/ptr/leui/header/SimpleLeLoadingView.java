@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.LinearInterpolator;
+import android.view.animation.OvershootInterpolator;
 
 import java.util.ArrayList;
 
@@ -198,7 +199,7 @@ public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorU
 
         z2nAnim.setDuration(EVERY_DURATION);
         //z2nAnim.setDuration(DURATION/BALL_NUM*orderId);
-        //z2nAnim.setInterpolator(new AccelerateInterpolator());
+        z2nAnim.setInterpolator(new OvershootInterpolator());
         //z2nAnim.addUpdateListener(this);
         return z2nAnim;
     }
@@ -480,6 +481,9 @@ public class SimpleLeLoadingView extends View implements ValueAnimator.AnimatorU
     public void cancelAutoPull2RefreshAnim(){
         if(mRotateAnim.isRunning()){
             mRotateAnim.pause();
+        }
+        for(BallsLoadingShapeHolder holder : mBalls){
+            holder.setAlpha(0f);
         }
     }
 

@@ -45,7 +45,7 @@ public class PtrFrameLayout extends FrameLayout {
     private int mContainerId = 0;
     // config
     private int mDurationToClose = 200;
-    private int mDurationToCloseHeader = 1000;
+    private int mDurationToCloseHeader = 500;
     private boolean mKeepHeaderWhenRefresh = true;
     private boolean mPullToRefresh = false;
     private View mHeaderView;
